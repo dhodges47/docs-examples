@@ -1,0 +1,85 @@
+.navbar-padding {
+    padding-left: 1rem;
+}
+
+.roundedBox {
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    background-color: #EDEDED;
+}
+
+#paypal-button-container {
+    display: none;
+}
+
+/* Placeholder styling */
+::placeholder {
+    font-style: italic;
+    color: #aaa;
+}
+
+:-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: lightgray;
+    font-size: 0.9em;
+}
+
+::-ms-input-placeholder {
+    /* Microsoft Edge */
+    color: lightgray;
+    font-size: 0.9em;
+}
+
+/* Form styling */
+.card {
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 10px 12px;
+    font-size: 16px;
+}
+
+.form-control:focus {
+    border-color: #007BFF;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+}
+
+/* Label styling */
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+
+
+/* Button styling */
+.btn-primary {
+    background-color: #007BFF;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}

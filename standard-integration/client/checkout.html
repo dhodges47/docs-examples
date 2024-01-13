@@ -1,18 +1,246 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="en" style="display: flex; flex-direction: column; min-height: 100vh;">
+
+<head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PayPal JS SDK Standard Integration</title>
-  </head>
-  <body>
-    <div id="paypal-button-container"></div>
-    <p id="result-message"></p>
-    <!-- Replace the "test" client-id value with your client-id 
-    <script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD"></script>-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <title>Registration - Winni JFO</title>
+
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="./styles/bootstrap.min.css">
+    <link rel="stylesheet" href="./styles/paymentPageStyles.css">
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            clearFormData();
+        });
+    </script>
+
+</head>
+
+<body style="display: flex; flex-direction: column; flex: 1;">
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary">
+        <a class="navbar-brand navbar-padding" href="index.html">Winni JFO</a>
+        <!-- Rest of your navbar code -->
+    </nav>
+
+    <!-- Content of your website goes here -->
+    <div class="container flex-grow-1 mt-3" id="introText">
+        <h1>Payment</h1>
+        <p>You can pay for camp here, using Paypal, Venmo, debit or credit card...</p>
+        <p>Winni JFO also accepts donations any time of year.</p>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3 class="text-center">Winni JFO Payments</h3>
+
+
+                    </div>
+                    <div class="col-md-12 text-center">
+                        <button id="btnDirections" class="btn btn-primary" type="button" data-toggle="collapse"
+                            data-target="#directions">
+                            Click here for Directions...
+                        </button>
+                    </div>
+                    <div class="col-md-12 collapse" id="directions">
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            Directions if you are registering:
+                                        </h5>
+                                        <p class="card-text text-justify">
+
+                                            <strong> 1.</strong>
+                                            Fill out the registration form that you got in the mail.<br />
+
+                                            <strong>
+                                                2.
+                                            </strong>Copy the total amounts for registration and deposit to the
+                                            appropriate fields below.<br />
+                                            <strong>
+                                                3.
+                                            </strong>Complete the rest of the fields.<br />
+                                            <strong>
+                                                4.
+                                            </strong>Submit your payment.<br />
+                                            <strong>5.</strong> Send your completed registration form to the
+                                            registrars via snail mail.<br />
+                                            <strong>NOTE:</strong> You may include a tax-deductible donation with
+                                            your registration.<br />
+                                            <!--  <strong>NEW for 2020: </strong>
+                                            You can now register for camp online: <a
+                                                href="https://docs.google.com/forms/d/1KUGga4inHk9zLHRa-k2UhQtzqRG_PVvIY5wWfVv_qw0"
+                                                target="_blank">Winni 2020 Online Registration Form.</a>
+ -->
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            Directions if you are making a donation:
+                                        </h5>
+                                        <p class="card-text text-justify">
+                                            <strong>1.</strong> Enter the amount of the donation below(all donations
+                                            are tax deductible)<br />
+                                            <strong>2.</strong> Complete the other fields, and enter “0” for
+                                            registration and deposit.<br />
+                                            <strong>3.</strong> Submit your payment.<br />
+                                            <strong>4.</strong> You will receive a confirmation via email.<br />
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            Directions if you are paying your balance, for room and board or any other
+                                            reason:
+                                        </h5>
+                                        <p class="card-text text-justify">
+                                            <strong>1.</strong>Enter the amount you are paying into the balance
+                                            field.<br />
+                                            <strong>
+                                                2.
+                                            </strong>Enter your name, email, and phone.<br />
+
+
+                                            Submit your payment.<br />
+
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="height:20px;"> &nbsp;</div>
+                    </div>
+                    <form id="form1">
+                        <div class="card col-md-12 center-row" id="formCards">
+                            <div class="card-body">
+                                <div class="center-row" style="width:90%;">
+                                    <div class="form-group">
+                                        <label for="campername">Your name</label>
+                                        <input type="text" class="form-control" id="campername" name="campername"
+                                            placeholder="Enter your name" required data-error="Please enter your name."
+                                            autocomplete="name">
+                                        <div class="text-danger" id="campernameError"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Email address</label>
+                                    <input type="email" class="form-control" id="Email" name="Email"
+                                        aria-describedby="emailHelp" placeholder="Enter your email address" required
+                                        data-error="Please enter a correct email address." autocomplete="email">
+                                    <div class="text-danger" id="emailError"></div>
+
+                                   <!--  <small id="emailHelp" class="form-text text-muted">A confirmation message
+                                        will
+                                        be sent to this address.</small> -->
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone</label>
+                                    <input type="tel" class="form-control phoneUS" id="phone" name="phone"
+                                        aria-describedby="phoneHelp" placeholder="Enter your phone number" required
+                                        data-error="Please enter a valid phone number" autocomplete="tel">
+                                    <div class="text-danger" id="phoneError"></div>
+                                    <small id="phoneHelp" class="form-text text-muted">Enter your phone number
+                                        in
+                                        case we need to get in touch with you.</small>
+                                </div>
+                                <div class="form-group">
+
+                                    <label for="Deposit">If you are paying your Deposit</label>
+                                    <input type="number" min="0" class="form-control" id="txtdeposit" name="txtdeposit"
+                                        placeholder="Enter your deposit amount here">
+                                </div>
+                                <div class="form-group">
+                                    <label for="Registration">If you are paying your Registration</label>
+                                    <input type="number" min=" 0" class="form-control" id="txtregistration"
+                                        name="txtregistration" placeholder="Enter your registration fee here">
+                                </div>
+                                <div class="form-group">
+                                    <label for="BalanceDue">If you are paying your Balance due</label>
+                                    <input type="number" min=" 0" class="form-control" id="txtbalancedue"
+                                        name="txtregistration" placeholder="Enter your balance amount here">
+                                </div>
+                                <div class="form-group">
+                                    <label for="donation">If you are making a Donation</label>
+                                    <input id="txtdonation" name="txtdonation" type="number" min=" 0"
+                                        class="form-control" placeholder="Enter the amount of your donation here">
+                                </div>
+                                <div class="form-group">
+                                    <label for="Total">Total</label>
+                                    <input id="txttotalamount" name="txttotalamount" class="form-control" type="text"
+                                        placeholder="Total to be charged to your credit card" readonly>
+                                </div>
+
+                                <button id="btnSubmit" name="btnSubmit" type="button" class="btn btn-primary">Continue
+                                    to payment...</button>
+                                <label for="feeCheckbox">Add 3% to defray fees</label>
+                                <input type="checkbox" id="feeCheckbox">
+                            </div>
+
+
+                            <div class="center-row text-justify" style="width:700px;">
+                                <small id="paymentHelp" class="form-text text-muted">
+                                    Since you are paying by credit card, we would appreciate the addition of 3%
+                                    of
+                                    the total amount charged to help defray the cost of Paypal's credit card
+                                    fees.<br /><br />
+                                    All information is secure.<br />
+                                    Winni JFO does not store your credit card information.<br />
+                                    All credit card transactions are handled by PayPal.<br />
+                                    If you have questions or problems, contact the registrar<br /> at
+                                    winni.registrar@gmail.com<br />
+                                </small>
+
+                            </div>
+                        </div>
+
+                    </form>
+                    <div id="divTotalPayment" class="col-md-12 text-center mt-3 mb-3 bg-light border rounded py-2">
+                        <h4 class="text-primary">Total Payment:</h4>
+                        <p id="totalPaymentAmount" class="h3 text-primary"></p>
+                    </div>
+
+                    <div id="paypal-button-container"></div>
+                    <div class="col-md-12 text-center mt-3">
+                        <button id="btnCancel" name="btnCancel" type="button" class="btn btn-primary">Cancel</button>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border text-primary" role="status" id="spinner">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer bg-primary mt-auto py-3 text-center">
+        <div class="container">
+            <span class="text-light" id="copyright"></span>
+        </div>
+    </footer>
+
+    <!-- Add Bootstrap JS and its dependencies -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
+    <!-- Add PayPal plugin -->
     <script src="https://www.paypal.com/sdk/js?client-id=AczBQ8Dqiy4X1Wpl-NK2VVnVhK6LKrKZRQAfuC04ObZp4MsuVqogcuM2gBQBn38E5ykzba_M8IeuDTMV&disable-funding=paylater&enable-funding=venmo">
     </script>
    
-    <script src="app.js"></script>
-  </body>
+    <script src="./js/paymentPageScripts.js"></script>
+
+</body>
+
 </html>

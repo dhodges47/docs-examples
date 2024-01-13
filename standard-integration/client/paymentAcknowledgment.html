@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" style="display: flex; flex-direction: column; min-height: 100vh;">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <title>Registration - Winni JFO</title>
+
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="./styles/bootstrap.min.css">
+    <style>
+        .navbar-padding {
+            padding-left: 1rem;
+        }
+    </style>
+</head>
+
+<body style="display: flex; flex-direction: column; flex: 1;">
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary">
+        <a class="navbar-brand navbar-padding" href="index.html">Winni JFO</a>
+        <!-- Rest of your navbar code -->
+    </nav>
+
+
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Thank you for your payment!</h2>
+                <p>You may print this page for your records.</p>
+                <p><a href="index.html" class="btn btn-primary">Return</a></p>
+                <table class="table table-striped">
+                    <tbody>
+                        <!-- Table rows for displaying data -->
+                    </tbody>
+                </table>
+                <button class="btn btn-primary" onclick="window.print()">Print this page</button>
+            </div>
+        </div>
+    </div>
+    <footer class="footer bg-primary mt-auto py-3 text-center">
+        <div class="container">
+            <span class="text-light" id="copyright"></span>
+        </div>
+    </footer>
+
+    <!-- Add Bootstrap JS and its dependencies -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log(data);
+            var data = JSON.parse(localStorage.getItem('formData'));
+            if (data) {
+                var tbody = document.querySelector('.table tbody');
+
+                // Function to create table row
+                function createRow(key, value) {
+                    // Check if the value is not zero, empty string, null, or undefined
+                    if (value && value != '0' && value != '') {
+
+
+                        // Format as currency for specific fields
+                        if (key === 'deposit' || key === 'registration' || key === 'donation' || key === 'balance due' || key === 'transaction fee' || key === 'total Amount') {
+                            // Assuming USD currency, modify as needed
+                            formattedvalue = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+                            value = formattedvalue;
+                        }
+
+                        var tr = document.createElement('tr');
+                        tr.innerHTML = '<th>' + key.charAt(0).toUpperCase() + key.slice(1) + '</th><td>' + value + '</td>';
+                        tbody.appendChild(tr);
+                    }
+                }
+
+
+                // Create rows for each data field
+                createRow('Transaction ID', data.transactionID);
+                createRow('Camper Name', data.campername);
+                createRow('email', data.email);
+                createRow('deposit', data.deposit);
+                createRow('registration', data.registration);
+                createRow('balance due', data.balancedue);
+                createRow('donation', data.donation);
+                createRow('transaction fee', data.fee);
+                createRow('total Amount', data.totalAmount);
+
+            }
+        });
+    </script>
+
+    <script>
+        var year = new Date().getFullYear();
+        document.getElementById('copyright').innerHTML = "Copyright " + year + " Winni JFO";
+    </script>
+
+</body>
+
+</html>

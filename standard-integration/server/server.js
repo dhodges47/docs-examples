@@ -53,19 +53,102 @@ const createOrder = async (cart) => {
     "shopping cart information passed from the frontend createOrder() callback:",
     cart,
   );
+  const {
+    transactionID,
+    status,
+    value,
+    payee_email_address,
+    create_time,
+    payer_name,
+    payerEmail,
+    campername,
+    email,
+    phone,
+    deposit,
+    donation,
+    registration,
+    balancedue,
+    totalAmount,
+    threePercent,
+    fee
+  } = cart;
+  var items = [];
+
+  // Define your items and the corresponding input field IDs
+  var itemDefinitions = [
+    { name: "deposit", inputId: deposit },
+    { name: "donation", inputId: donation },
+    { name: "registration", inputId: registration },
+    { name: "balancedue", inputId: balancedue },
+    { name: "fee", inputId: fee }
+  ];
+
+  itemDefinitions.forEach(function (itemDef) {
+    var value = itemDef.inputId;
+    if (value > 0) {  // Check if the value is greater than zero
+      var item = {
+        name: itemDef.name,
+        quantity: "1", // Assuming quantity is always 1
+        unit_amount: {
+          value: value,
+          currency_code: "USD"
+        }
+      };
+      items.push(item);
+    }
+  });
+
+  console.log(items);
+  var itemTotalValue = 0;
+  // Assuming items array is already populated
+  items.forEach(function (item) {
+    var itemValue = parseFloat(item.unit_amount.value);
+    itemTotalValue += itemValue;
+  });
+  var fullName = campername.split(' ');
+  var firstName = fullName[0];
+  var lastName = fullName.length > 1 ? fullName[fullName.length - 1] : '';
+  // Create the payer object
+  var payment_source = {
+    paypal: {
+      name: {
+        given_name: firstName,
+        surname: lastName
+      },
+      email_address: email,
+      phone: {
+        phone_type: "MOBILE", // Assuming the phone type is mobile; adjust if necessary
+        phone_number: {
+          national_number: phone.replace(/\D/g, '') // Remove non-numeric characters
+        }
+      }
+    }
+  };
+
 
   const accessToken = await generateAccessToken();
   const url = `${base}/v2/checkout/orders`;
   const payload = {
     intent: "CAPTURE",
-    purchase_units: [
-      {
-        amount: {
-          currency_code: "USD",
-          value: "110.00",
-        },
+    purchase_units: [{
+      amount: {
+        value: totalAmount,
+        "currency_code": "USD",
+        breakdown: {
+          item_total: {
+            value: itemTotalValue.toFixed(2), // Format to 2 decimal places
+            currency_code: "USD"
+          }
+        }
       },
-    ],
+      items: items
+
+    }],
+    payment_source: payment_source,
+    application_context: {
+      shipping_preference: "NO_SHIPPING"
+    }
+
   };
 
   const response = await fetch(url, {
@@ -133,9 +216,11 @@ app.get("/api/helloworld", async (req, res) => {
 });
 app.post("/api/orders", async (req, res) => {
   try {
-    console.log('in create order');
+    console.log('in /api/order');
     // use the cart information passed from the front-end to calculate the order amount detals
+    console.log(req.body);
     const { cart } = req.body;
+    console.log('cart', cart)
     const { jsonResponse, httpStatusCode } = await createOrder(cart);
     res.status(httpStatusCode).json(jsonResponse);
   } catch (error) {
