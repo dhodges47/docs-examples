@@ -4,7 +4,7 @@ import "dotenv/config";
 import path from "path";
 
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PORT = 8888 } = process.env;
-console.log(PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET);
+//console.log(PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET);
 const base = "https://api-m.sandbox.paypal.com";
 const app = express();
 
@@ -54,13 +54,6 @@ const createOrder = async (cart) => {
     cart,
   );
   const {
-    transactionID,
-    status,
-    value,
-    payee_email_address,
-    create_time,
-    payer_name,
-    payerEmail,
     campername,
     email,
     phone,

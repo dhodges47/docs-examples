@@ -8,81 +8,236 @@ function clearFormData() {
     }
 }
 
-paypal.Buttons({
-    createOrder: function (data, actions) {
-      
+window.paypal.Buttons({
+    async createOrder(data, actions) {
+        console.log('in createOrder');
+        // Adding the form fields
+        var items = [];
+
+        // Define your items and the corresponding input field IDs
+        var itemDefinitions = [
+            { name: "deposit", inputId: "#txtdeposit" },
+            { name: "donation", inputId: "#txtdonation" },
+            { name: "registration", inputId: "#txtregistration" },
+            { name: "balancedue", inputId: "#txtbalancedue" },
+            { name: "fee", inputId: "#fee" }
+        ];
+
+        itemDefinitions.forEach(function (itemDef) {
+            var value = $(itemDef.inputId).val();
+            if (value > 0) {  // Check if the value is greater than zero
+                var item = {
+                    name: itemDef.name,
+                    quantity: "1", // Assuming quantity is always 1
+                    unit_amount: {
+                        value: value,
+                        currency_code: "USD"
+                    }
+                };
+                items.push(item);
+            }
+        });
+
+
+        // Now items array contains all your items
+        console.log(items);
+        var itemTotalValue = 0;
+
+        // Assuming items array is already populated
+        items.forEach(function (item) {
+            var itemValue = parseFloat(item.unit_amount.value);
+            itemTotalValue += itemValue;
+        });
+        var fullName = $('#campername').val().split(' ');
+        var firstName = fullName[0];
+        var lastName = fullName.length > 1 ? fullName[fullName.length - 1] : '';
+
+        // Create the payer object
+        var payment_source = {
+            paypal: {
+                name: {
+                    given_name: firstName,
+                    surname: lastName
+                },
+                email_address: $('#Email').val(),
+                phone: {
+                    phone_type: "MOBILE", // Assuming the phone type is mobile; adjust if necessary
+                    phone_number: {
+                        national_number: $('#phone').val().replace(/\D/g, '') // Remove non-numeric characters
+                    }
+                }
+            }
+        };
+        var itemTotalValue = 0;
+
+        // Assuming items array is already populated
+        items.forEach(function (item) {
+            var itemValue = parseFloat(item.unit_amount.value);
+            itemTotalValue += itemValue;
+        });
+
+
+        // Create the payer object
+        var payment_source = {
+            paypal: {
+                name: {
+                    given_name: firstName,
+                    surname: lastName
+                },
+                email_address: $('#Email').val(),
+                phone: {
+                    phone_type: "MOBILE", // Assuming the phone type is mobile; adjust if necessary
+                    phone_number: {
+                        national_number: $('#phone').val().replace(/\D/g, '') // Remove non-numeric characters
+                    }
+                }
+            }
+        };
+
         var order = actions.order.create({
-           
+            purchase_units: [{
+                amount: {
+                    value: $('#txttotalamount').val(),
+                    "currency_code": "USD",
+                    breakdown: {
+                        item_total: {
+                            value: itemTotalValue.toFixed(2), // Format to 2 decimal places
+                            currency_code: "USD"
+                        }
+                    }
+                },
+                items: items
+
+            }],
+            payment_source: payment_source,
             application_context: {
                 shipping_preference: "NO_SHIPPING"
             }
         });
         console.log(order);
-        return order;
-    },
-    onApprove: function (data, actions) {
-        return actions.order.capture().then(function (details) {
-            console.log('return from paypal: ', details);
-            // Handle the successful payment
-
-            $('#paypal-button-container').hide();
-            $('#spinner').show();
-
-            var postData = {
-                transactionID: details?.id ?? null,
-                status: details?.status ?? null,
-                value: details?.purchase_units?.[0]?.amount?.value ?? null,
-                payee_email_address: details?.purchase_units?.[0]?.payee?.email_address ?? null,
-                create_time: details?.create_time ?? null,
-                payer_name: (details?.payer?.name?.given_name && details?.payer?.name?.surname) ? `${details.payer.name.given_name} ${details.payer.name.surname}` : null,
-                payerEmail: details?.payer?.email_address ?? null,
-
-                // Adding the form fields
-                campername: $('#campername').val(),
-                email: $('#Email').val(),
-                phone: $('#phone').val(),
-                deposit: $('#txtdeposit').val(),
-                donation: $('#txtdonation').val(),
-                registration: $('#txtregistration').val(),
-                balancedue: $('#txtbalancedue').val(),
-                totalAmount: $('#txttotalamount').val(),
-                threePercent: $('#feeCheckbox').prop('checked'),
-                fee: $('#fee').val()
-            }
-            var dataString = JSON.stringify(postData);
-
-            // Save the stringified data to local storage
-            localStorage.setItem('formData', dataString);
-            console.log(postData);
-           // window.location.href = "paymentAcknowledgment.html";
-            // Make an AJAX call to your server
-            fetch('/api/orders', {
-                method: 'POST',
+        var postData = {
+            campername: $('#campername').val(),
+            email: $('#Email').val(),
+            phone: $('#phone').val(),
+            deposit: $('#txtdeposit').val(),
+            donation: $('#txtdonation').val(),
+            registration: $('#txtregistration').val(),
+            balancedue: $('#txtbalancedue').val(),
+            totalAmount: $('#txttotalamount').val(),
+            threePercent: $('#feeCheckbox').prop('checked'),
+            fee: $('#fee').val()
+        }
+        try {
+            const response = await fetch("/api/orders", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
                 },
+                // use the "body" param to optionally pass additional order information
+                // like product ids and quantities
                 body: JSON.stringify({
                     cart: postData
-                  }),
-            })
-                .then((response) => {
-                    console.log('Success');
-                    console.log(response);
-                    window.location.href = "paymentAcknowledgment.html";
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
+                }),
+            });
 
-        });
+            const orderData = await response.json();
+
+            if (orderData.id) {
+                return orderData.id;
+            } else {
+                const errorDetail = orderData?.details?.[0];
+                const errorMessage = errorDetail
+                    ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
+                    : JSON.stringify(orderData);
+
+                throw new Error(errorMessage);
+            }
+        } catch (error) {
+            console.error(error);
+            resultMessage(`Could not initiate PayPal Checkout...<br><br>${error}`);
+        }
     },
-    onError: function (err) {
-        // This function is called if there is an error in the transaction.
-        // Here, you can handle declines or other failures.
-        console.error('Transaction error:', err);
-        // Implement additional logic here, such as displaying a message to the user
+
+    onApprove: async function (data, actions) {
+        console.log('return from order, data: ', data);
+
+        $('#paypal-button-container').hide();
+        // $('#spinner').show();
+
+
+
+        // Make an AJAX call to your server
+        try {
+            const response = await fetch(`/api/orders/${data.orderID}/capture`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            const orderData = await response.json();
+            // Three cases to handle:
+            //   (1) Recoverable INSTRUMENT_DECLINED -> call actions.restart()
+            //   (2) Other non-recoverable errors -> Show a failure message
+            //   (3) Successful transaction -> Show confirmation or thank you message
+
+            const errorDetail = orderData?.details?.[0];
+
+            if (errorDetail?.issue === "INSTRUMENT_DECLINED") {
+                // (1) Recoverable INSTRUMENT_DECLINED -> call actions.restart()
+                // recoverable state, per https://developer.paypal.com/docs/checkout/standard/customize/handle-funding-failures/
+                return actions.restart();
+            } else if (errorDetail) {
+                // (2) Other non-recoverable errors -> Show a failure message
+                throw new Error(`${errorDetail.description} (${orderData.debug_id})`);
+            } else if (!orderData.purchase_units) {
+                throw new Error(JSON.stringify(orderData));
+            } else {
+                // (3) Successful transaction -> Show confirmation or thank you message
+                // Or go to another URL:  actions.redirect('thank_you.html');
+                const transaction =
+                    orderData?.purchase_units?.[0]?.payments?.captures?.[0] ||
+                    orderData?.purchase_units?.[0]?.payments?.authorizations?.[0];
+                console.log(
+                    `Success! Transaction ${transaction.status}: ${transaction.id}<br><br>See console for all available details`,
+                );
+                console.log(
+                    "Capture result",
+                    orderData,
+                    JSON.stringify(orderData, null, 2),
+                );
+                var formData = {
+                    // Adding the form fields
+                    campername: $('#campername').val(),
+                    email: $('#Email').val(),
+                    phone: $('#phone').val(),
+                    deposit: $('#txtdeposit').val(),
+                    donation: $('#txtdonation').val(),
+                    registration: $('#txtregistration').val(),
+                    balancedue: $('#txtbalancedue').val(),
+                    totalAmount: $('#txttotalamount').val(),
+                    threePercent: $('#feeCheckbox').prop('checked'),
+                    fee: $('#fee').val()
+                }
+                var dataString = JSON.stringify(formData);
+
+                // Save the stringified data to local storage
+                localStorage.setItem('formData', dataString);
+                console.log(formData);
+                window.location.href = "paymentAcknowledgment.html";
+            }
+        } catch (error) {
+            console.error(error);
+            resultMessage(
+                `Sorry, your transaction could not be processed...<br><br>${error}`,
+            );
+        }
     }
 }).render('#paypal-button-container');
+
+
+
+
 
 $(document).ready(function () {
     var regInput = $('#txtregistration');
