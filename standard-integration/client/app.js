@@ -1,6 +1,28 @@
 window.paypal
   .Buttons({
-    async createOrder() {
+    async createOrder(data, actions) {
+      var order = actions.order.create({
+        purchase_units: [{
+            amount: {
+               // value: $('#txttotalamount').val(),
+               value: 100,
+                "currency_code": "USD",
+                breakdown: {
+                    item_total: {
+                      //  value: itemTotalValue.toFixed(2), // Format to 2 decimal places
+                      value: 100,
+                        currency_code: "USD"
+                    }
+                }
+            },
+           // items: items
+
+        }],
+        application_context: {
+            shipping_preference: "NO_SHIPPING"
+        }
+    });
+    console.log(order);
       try {
         const response = await fetch("/api/orders", {
           method: "POST",
@@ -12,8 +34,8 @@ window.paypal
           body: JSON.stringify({
             cart: [
               {
-                id: "YOUR_PRODUCT_ID",
-                quantity: "YOUR_PRODUCT_QUANTITY",
+                id: "PAYMENT",
+                quantity: "1",
               },
             ],
           }),

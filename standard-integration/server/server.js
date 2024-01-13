@@ -4,6 +4,7 @@ import "dotenv/config";
 import path from "path";
 
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PORT = 8888 } = process.env;
+console.log(PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET);
 const base = "https://api-m.sandbox.paypal.com";
 const app = express();
 
@@ -34,6 +35,8 @@ const generateAccessToken = async () => {
     });
 
     const data = await response.json();
+    console.log(data);
+    console.log('token generated: ', data.access_token)
     return data.access_token;
   } catch (error) {
     console.error("Failed to generate Access Token:", error);
@@ -116,11 +119,21 @@ async function handleResponse(response) {
   } catch (err) {
     const errorMessage = await response.text();
     throw new Error(errorMessage);
+
+
   }
 }
+app.get("/api/helloworld", async (req, res) => {
+  console.log('helloworld');
+  const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PORT = 8888 } = process.env;
+  console.log(PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET);
+  return res.status(200).json({ message: "Hello World" })
 
+
+});
 app.post("/api/orders", async (req, res) => {
   try {
+    console.log('in create order');
     // use the cart information passed from the front-end to calculate the order amount detals
     const { cart } = req.body;
     const { jsonResponse, httpStatusCode } = await createOrder(cart);
