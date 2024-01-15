@@ -7,7 +7,9 @@ function clearFormData() {
         localStorage.removeItem('formData');
     }
 }
-
+function showError(message) {
+    $("#errorMessage").html(message).removeClass("d-none");
+}
 window.paypal.Buttons({
     async createOrder(data, actions) {
         console.log('in createOrder');
@@ -154,7 +156,7 @@ window.paypal.Buttons({
             }
         } catch (error) {
             console.error(error);
-            resultMessage(`Could not initiate PayPal Checkout...<br><br>${error}`);
+            showError(`Could not initiate PayPal Checkout...<br><br>${error}`);
         }
     },
 
@@ -189,7 +191,7 @@ window.paypal.Buttons({
                 return actions.restart();
             } else if (errorDetail) {
                 // (2) Other non-recoverable errors -> Show a failure message
-                throw new Error(`${errorDetail.description} (${orderData.debug_id})`);
+                showError(`${errorDetail.description} (${orderData.debug_id})`);
             } else if (!orderData.purchase_units) {
                 throw new Error(JSON.stringify(orderData));
             } else {
@@ -228,7 +230,7 @@ window.paypal.Buttons({
             }
         } catch (error) {
             console.error(error);
-            resultMessage(
+            showError(
                 `Sorry, your transaction could not be processed...<br><br>${error}`,
             );
         }

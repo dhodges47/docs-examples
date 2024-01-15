@@ -141,7 +141,7 @@
                                         data-error="Please enter a correct email address." autocomplete="email">
                                     <div class="text-danger" id="emailError"></div>
 
-                                   <!--  <small id="emailHelp" class="form-text text-muted">A confirmation message
+                                    <!--  <small id="emailHelp" class="form-text text-muted">A confirmation message
                                         will
                                         be sent to this address.</small> -->
                                 </div>
@@ -219,6 +219,8 @@
                         <div class="spinner-border text-primary" role="status" id="spinner">
                         </div>
                     </div>
+                    <!-- Error Message Field -->
+                    <div id="errorMessage" class="alert alert-danger d-none"></div>
                 </div>
             </div>
         </div>
@@ -236,9 +238,10 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
     <!-- Add PayPal plugin -->
-    <script src="https://www.paypal.com/sdk/js?client-id=AczBQ8Dqiy4X1Wpl-NK2VVnVhK6LKrKZRQAfuC04ObZp4MsuVqogcuM2gBQBn38E5ykzba_M8IeuDTMV&disable-funding=paylater&enable-funding=venmo">
-    </script>
-   
+    <script
+        src="https://www.paypal.com/sdk/js?client-id=AczBQ8Dqiy4X1Wpl-NK2VVnVhK6LKrKZRQAfuC04ObZp4MsuVqogcuM2gBQBn38E5ykzba_M8IeuDTMV&disable-funding=paylater&enable-funding=venmo">
+        </script>
+
     <script src="./js/paymentPageScripts.js"></script>
 
 </body>
